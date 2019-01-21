@@ -12,7 +12,7 @@ X is a simple and effective user script manager for UNIX and Bash Environments
 ## Usage
 Usage:
 
-	/home/mcisback/.x/.bin/x <cmd> [<args>]
+	~/.x/.bin/x <cmd> [<args>]
 		run_script|r: Run a X script (arg: <script_name>)
 		create_script|c: Create a X script (args: <script_name> <template>)
 		list_templates|lt: List templates available in /home/mcisback/.x

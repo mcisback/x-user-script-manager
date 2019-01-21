@@ -3,11 +3,10 @@ X is a simple and effective user script manager for UNIX and Bash Environments
 
 ## Installation
 
-   git clone https://github.com/mcisback/x-user-script-manager.git
-
-   cd x-user-script-manager
-   
-   ./x install
+    git clone https://github.com/mcisback/x-user-script-manager.git
+    cd x-user-script-manager
+    ./x install
+    # Follow Instructions from output
 
 ## Usage
 Usage:
@@ -29,4 +28,39 @@ Usage:
 		x_backup|xb: Backup X Script and copy it to $X_BACKUP_DIR:~/Dropbox/X_BACKUP
 		print_bashrc_conf|pbc: Print Lines to add to ~/.bashrc
 		help|h: Print this help
+
+## Examples
+
+    # Create New Script
+    x c script_name
+
+    # Edit a script using $X_EDITOR var
+    x e script_name
+
+    # Run a script
+    x script_name
+    # Or
+    x r script_name
+
+    # List all scripts
+    x ls
+
+    # List all scripts template
+    x lt
+
+    # Create a script using template "python"
+    x c script_name python
+
+    # Show template content with syntax highlighting (if available)
+    x t template_name
+
+    # Show script content with syntax highlighting (if available)
+    x s script_name
+
+    # Delete a script
+    x d script_name
+
+    # Backup everything using X_BACKUP_DIR var
+    x xb
+    
 

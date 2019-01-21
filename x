@@ -334,7 +334,7 @@ create_script() {
     fi
 
     if [ -e "$X_SCRIPTS_DIR/$script" ]; then
-        abort "[!] $X_SCRIPT_DIR/$script already exists"
+        abort "[!] $X_SCRIPTS_DIR/$script already exists"
     fi
 
     print "[+] Creating $template script $script in $X_SCRIPTS_DIR"
@@ -554,10 +554,35 @@ install_script_from_url() {
         print "[+] script_name not set, using $script_name"
     fi
 
+    script_basename=`basename "$url"`
+
+    if [ -x "$X_SCRIPTS_DIR/$script_name" ]; then
+        if [ "$script_basename" = "$script_name" ]; then
+            print "[+] $script_name already exists; but has the same name as $script_basename; overwriting it"
+        else
+            abort "[!] $script_name already exists; aborting"
+        fi
+    fi
+
     download_and_copy "$url" "$X_SCRIPTS_DIR/$script_name"
 
     print "\n[+] Setting $X_SCRIPTS_DIR/$script_name as executable"
     chmod +x "$X_SCRIPTS_DIR/$script_name"
+}
+
+install_template_from_url() {
+    url="$1"
+    template_name="$2"
+
+    if [ -z "$template_name" ]; then
+        template_name=`basename "$url"`
+        print "[+] template_name not set, using $template_name"
+    fi
+
+    download_and_copy "$url" "$X_TEMPLATES_DIR/$template_name"
+
+    print "\n[+] Setting $X_TEMPLATES_DIR/$template_name as executable"
+    chmod +x "$X_TEMPLATES_DIR/$template_name"
 }
 
 help() {

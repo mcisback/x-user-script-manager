@@ -91,6 +91,8 @@ X_CAT_CMD="highlight -O ansi"
 cmds=(
 "run_script"
 "create_script"
+"rename_script"
+"rename_template"
 "list_templates"
 "list_scripts"
 "show_template"
@@ -109,6 +111,8 @@ cmds=(
 alss=(
 "r"
 "c"
+"rs"
+"rt"
 "lt"
 "ls"
 "t"
@@ -127,6 +131,8 @@ alss=(
 msgs=(
 "Run a X script (arg: <script_name>)"
 "Create a X script (args: <script_name> <template>)"
+"Rename Script (arg: <script_name>)"
+"Rename Template (arg: <template_name>)"
 "List templates available in $X_DIR"
 "List scripts available in $X_DIR"
 "Show Template content (arg: <template_name>)"
@@ -326,6 +332,40 @@ create_script() {
     chmod +x "$X_SCRITPS_DIR/$script"
 
     edit_script "$script"
+}
+
+rename_script() {
+    script="$1"
+    new_name="$2"
+
+    if [ -z "$script" -o -z "$new_name" ]; then
+        abort "[!] script_name and new_name required"
+    fi
+
+    if [ ! -e "$X_SCRIPTS_DIR/$script" ]; then
+        abort "[!] $script doesn't exists"
+    fi
+    
+    print "[+] Moving $X_SCRIPTS_DIR/$script to $X_SCRIPTS_DIR/$new_name"
+    mv "$X_SCRIPTS_DIR/$script" "$X_SCRIPTS_DIR/$new_name"
+
+}
+
+rename_template() {
+    template="$1"
+    new_name="$2"
+
+    if [ -z "$template" -o -z "$new_name" ]; then
+        abort "[!] template_name and new_name required"
+    fi
+
+    if [ ! -e "$X_TEMPLATE_DIR/$template" ]; then
+        abort "[!] $template doesn't exists"
+    fi
+    
+    print "[+] Moving $X_TEMPLATE_DIR/$template to $X_TEMPLATE_DIR/$new_name"
+    mv "$X_TEMPLATE_DIR/$template" "$X_TEMPLATE_DIR/$new_name"
+
 }
 
 list_templates() {

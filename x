@@ -4,7 +4,7 @@ X_DIR_BASENAME=".x"
 X_DIR="$HOME/$X_DIR_BASENAME"
 X_X_DIR="$X_DIR/.bin"
 X="$X_X_DIR/x"
-X_SCRITPS_DIR="$X_DIR/scripts"
+X_SCRIPTS_DIR="$X_DIR/scripts"
 X_TEMPLATES_DIR="$X_DIR/templates"
 X_TRASH="$X_DIR/trash"
 X_BACKUP_DIR="$HOME/Dropbox/X_BACKUP"
@@ -91,6 +91,7 @@ X_CAT_CMD="highlight -O ansi"
 cmds=(
 "run_script"
 "create_script"
+"create_template"
 "rename_script"
 "rename_template"
 "list_templates"
@@ -99,6 +100,7 @@ cmds=(
 "show_script"
 "show_trash"
 "edit_script"
+"edit_template"
 "delete_script"
 "generate_completions"
 "install"
@@ -111,6 +113,7 @@ cmds=(
 alss=(
 "r"
 "c"
+"ct"
 "rs"
 "rt"
 "lt"
@@ -119,6 +122,7 @@ alss=(
 "s"
 "st"
 "e"
+"et"
 "d"
 "gc"
 "i"
@@ -131,6 +135,7 @@ alss=(
 msgs=(
 "Run a X script (arg: <script_name>)"
 "Create a X script (args: <script_name> <template>)"
+"Create a X template (args: <template_name>)"
 "Rename Script (arg: <script_name>)"
 "Rename Template (arg: <template_name>)"
 "List templates available in $X_DIR"
@@ -139,6 +144,7 @@ msgs=(
 "Show Script content (arg: <script_name>)"
 "Show Trash located in $X_TRASH"
 "Edit script, if exists (arg: <script_name>"
+"Edit template, if exists (arg: <template_name>)"
 "Delete a script by copying it to $X_TRASH (arg: <script_name>)"
 "Generate complentions file"
 "Install this script (To run just the first time)"
@@ -239,7 +245,7 @@ x_backup() {
 print_bashrc_conf() {
     print "[+] Add this line at the end of your ~/.bashrc"
     print "export PATH=\"\$HOME/${X_X_DIR##$HOME\/}:\$PATH\""
-    print "export PATH=\"\$HOME/${X_SCRITPS_DIR##$HOME\/}:\$PATH\""
+    print "export PATH=\"\$HOME/${X_SCRIPTS_DIR##$HOME\/}:\$PATH\""
     print "source \"\$HOME/$X_COMPLETIONS_BASE_DIR/$X_COMPLETIONS_FILENAME\"\n"
 }
 
@@ -250,8 +256,8 @@ create_x_dir() {
     print "[+] Creating $X_X_DIR"
     mkdir "$X_X_DIR"
 
-    print "[+] Creating $X_SCRITPS_DIR"
-    mkdir "$X_SCRITPS_DIR"
+    print "[+] Creating $X_SCRIPTS_DIR"
+    mkdir "$X_SCRIPTS_DIR"
 
     print "[+] Creating $X_TEMPLATES_DIR"
     mkdir "$X_TEMPLATES_DIR"
@@ -293,13 +299,13 @@ check_if_editor_is_installed() {
 }
 
 run_script() {
-    if [ ! -e "$X_SCRITPS_DIR/$1" ]; then
+    if [ ! -e "$X_SCRIPTS_DIR/$1" ]; then
         abort "[!] Script $1 doesn't exists; exit"
     fi
 
     # print "[+] Running \"$1\"\n" 
 
-    "$X_SCRITPS_DIR/$1" "$@"
+    "$X_SCRIPTS_DIR/$1" "$@"
     
     exit $?
 }
@@ -321,17 +327,40 @@ create_script() {
         abort "[!] $template doesn't exists in $X_TEMPLATES_DIR"
     fi
 
-    if [ -e "$X_SCRITPS_DIR/$script" ]; then
+    if [ -e "$X_SCRIPTS_DIR/$script" ]; then
         abort "[!] $X_SCRIPT_DIR/$script already exists"
     fi
 
-    print "[+] Creating $template script $script in $X_SCRITPS_DIR"
-    cp "$X_TEMPLATES_DIR/$template" "$X_SCRITPS_DIR/$script"
+    print "[+] Creating $template script $script in $X_SCRIPTS_DIR"
+    cp "$X_TEMPLATES_DIR/$template" "$X_SCRIPTS_DIR/$script"
 
     print "[+] Setting $script as executable..."
-    chmod +x "$X_SCRITPS_DIR/$script"
+    chmod +x "$X_SCRIPTS_DIR/$script"
 
     edit_script "$script"
+}
+
+create_template() {
+    template="$1"
+    template_copy="$2"
+
+    if [ -z "$template" ]; then
+        abort "[!] template_name arg required"
+    fi
+
+    if [ -e "$X_TEMPLATES_DIR/$template" ]; then
+        abort "[!] $X_TEMPLATES_DIR/$template already exists\n[*] Run x et $template to edit it"
+    fi
+
+    if [ ! -z "$template_copy" ]; then
+        print "[+] Copying existing template $template_copy to new template $template"
+        cp "$X_TEMPLATES_DIR/$template_copy" "$X_TEMPLATES_DIR/$template"
+    else
+        print "[+] Creating template $template in $X_TEMPLATES_DIR"
+        touch "$X_TEMPLATES_DIR/$template"
+    fi
+
+    edit_template "$template"
 }
 
 rename_script() {
@@ -359,12 +388,12 @@ rename_template() {
         abort "[!] template_name and new_name required"
     fi
 
-    if [ ! -e "$X_TEMPLATE_DIR/$template" ]; then
+    if [ ! -e "$X_TEMPLATES_DIR/$template" ]; then
         abort "[!] $template doesn't exists"
     fi
     
-    print "[+] Moving $X_TEMPLATE_DIR/$template to $X_TEMPLATE_DIR/$new_name"
-    mv "$X_TEMPLATE_DIR/$template" "$X_TEMPLATE_DIR/$new_name"
+    print "[+] Moving $X_TEMPLATES_DIR/$template to $X_TEMPLATES_DIR/$new_name"
+    mv "$X_TEMPLATES_DIR/$template" "$X_TEMPLATES_DIR/$new_name"
 
 }
 
@@ -381,7 +410,7 @@ list_scripts() {
 
     print "[+] List all available scripts"
 
-    $X_LS_CMD "$X_SCRITPS_DIR"
+    $X_LS_CMD "$X_SCRIPTS_DIR"
 }
 
 edit() {
@@ -395,7 +424,7 @@ edit() {
 }
 
 edit_script() {
-    script="$X_SCRITPS_DIR/$1"
+    script="$X_SCRIPTS_DIR/$1"
 
     if [ ! -e "$script" ]; then
         abort "[!] $script doesn't exists; create it before"
@@ -406,13 +435,25 @@ edit_script() {
     edit "$script"
 }
 
+edit_template() {
+    template="$X_TEMPLATES_DIR/$1"
+
+    if [ ! -e "$template" ]; then
+        abort "[!] $template doesn't exists; create it before"
+    fi
+
+    print "[+] Editing $1"
+
+    edit "$template"
+}
+
 delete_script() {
     if [ -z "$1" ]; then
         abort "[!] script_name arg required"
     fi
 
 
-    script="$X_SCRITPS_DIR/$1"
+    script="$X_SCRIPTS_DIR/$1"
 
     if [ ! -e "$script" ]; then
         abort "[!] $script does not exists"
@@ -445,11 +486,11 @@ show_script() {
         list_scripts
     fi
 
-    if [ ! -e "$X_SCRITPS_DIR/$1" ]; then
+    if [ ! -e "$X_SCRIPTS_DIR/$1" ]; then
         abort "[+] Script $1 does not exists; exit"
     fi
 
-    $X_CAT_CMD "$X_SCRITPS_DIR/$1" 
+    $X_CAT_CMD "$X_SCRIPTS_DIR/$1" 
 }
 
 help() {

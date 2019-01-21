@@ -102,6 +102,7 @@ cmds=(
 "edit_script"
 "edit_template"
 "delete_script"
+"delete_template"
 "generate_completions"
 "install"
 "x_reduplicate"
@@ -124,6 +125,7 @@ alss=(
 "e"
 "et"
 "d"
+"dt"
 "gc"
 "i"
 "x"
@@ -146,6 +148,7 @@ msgs=(
 "Edit script, if exists (arg: <script_name>"
 "Edit template, if exists (arg: <template_name>)"
 "Delete a script by copying it to $X_TRASH (arg: <script_name>)"
+"Delete a template by copying it to $X_TRASH (arg: <template_name>)"
 "Generate complentions file"
 "Install this script (To run just the first time)"
 "Duplicate X and copy it  to $X_X_DIR"
@@ -461,6 +464,22 @@ delete_script() {
     
     print "[+] Removing $script"
     mv "$script" "$X_TRASH/$1"
+}
+
+delete_template() {
+    if [ -z "$1" ]; then
+        abort "[!] template_name arg required"
+    fi
+
+
+    template="$X_TEMPLATES_DIR/$1"
+
+    if [ ! -e "$template" ]; then
+        abort "[!] $template does not exists"
+    fi
+    
+    print "[+] Removing $template"
+    mv "$template" "$X_TRASH/$1"
 }
 
 show_trash() {

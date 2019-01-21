@@ -109,6 +109,7 @@ cmds=(
 "x_autoedit"
 "x_backup"
 "print_bashrc_conf"
+"install_script_from_url"
 "help"
 )
 alss=(
@@ -132,12 +133,13 @@ alss=(
 "ae"
 "xb"
 "pbc"
+"iu"
 "h"
 )
 msgs=(
 "Run a X script (arg: <script_name>)"
 "Create a X script (args: <script_name> <template>)"
-"Create a X template (args: <template_name>)"
+"Create a X template (args: <template_name>, optional: <template_to_copy>)"
 "Rename Script (arg: <script_name>)"
 "Rename Template (arg: <template_name>)"
 "List templates available in $X_DIR"
@@ -155,6 +157,7 @@ msgs=(
 "Edit X:$X"
 "Backup X Script and copy it to \$X_BACKUP_DIR:$X_BACKUP_DIR"
 "Print Lines to add to ~/.bashrc"
+"Install script in $X_SCRIPTS_DIR downloading it from URL (arg: url, optional: script_name)"
 "Print this help"
 )
 
@@ -510,6 +513,51 @@ show_script() {
     fi
 
     $X_CAT_CMD "$X_SCRIPTS_DIR/$1" 
+}
+
+check_if_url_is_valid() {
+    url="$1"
+
+    if [ -z "$url" ]; then
+        abort "[!] Need URL; exiting"
+    fi
+
+    curl --output /dev/null --silent --head --fail "$url" && true && return
+
+    false && return
+}
+
+download_and_copy() {
+    url="$1"
+    filename="$2"
+    
+    [ ! -z "$url" ] || abort "[+] url is required; aborting"
+    [ ! -z "$filename" ] || abort "[+] filename is required; aborting"
+
+    [ ! -x "$(command -v curl)" ] && abort "[!] curl is required; aborting"
+    
+    if ! check_if_url_is_valid "$url"; then
+        abort "$url\n\tis not valid; aborting"
+    fi
+
+    print "[+] Downloading $url to $filename\n"
+    
+    curl --progress-bar "$url" -o "$filename" || abort "[!] curl failed; aborting"
+}
+
+install_script_from_url() {
+    url="$1"
+    script_name="$2"
+
+    if [ -z "$script_name" ]; then
+        script_name=`basename "$url"`
+        print "[+] script_name not set, using $script_name"
+    fi
+
+    download_and_copy "$url" "$X_SCRIPTS_DIR/$script_name"
+
+    print "\n[+] Setting $X_SCRIPTS_DIR/$script_name as executable"
+    chmod +x "$X_SCRIPTS_DIR/$script_name"
 }
 
 help() {

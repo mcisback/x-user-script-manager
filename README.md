@@ -4,6 +4,7 @@ X is a simple and effective user script manager for UNIX and Bash Environments
 ## Optional Dependencies
     tree -> for viewing directory better
     highlight or pygmentize -> for syntax highlighting when seeing a template or user script
+    vim, nano, pico or your favorite editor -> for editing templates and script files
 
 ## Installation
 

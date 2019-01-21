@@ -4,7 +4,9 @@ X is a simple and effective user script manager for UNIX and Bash Environments
 ## Installation
 
    git clone https://github.com/mcisback/x-user-script-manager.git
+
    cd x-user-script-manager
+   
    ./x install
 
 ## Usage

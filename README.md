@@ -1,6 +1,10 @@
 # x-user-script-manager
 X is a simple and effective user script manager for UNIX and Bash Environments
 
+## Optional Dependencies
+    tree -> for viewing directory better
+    highlight or pygmentize -> for syntax highlighting when seeing a template or user script
+
 ## Installation
 
     git clone https://github.com/mcisback/x-user-script-manager.git

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 X_DIR_BASENAME=".x"
-X_DIR="$HOME/.x"
+X_DIR="$HOME/$X_DIR_BASENAME"
 X_X_DIR="$X_DIR/.bin"
 X="$X_X_DIR/x"
 X_SCRITPS_DIR="$X_DIR/scripts"
@@ -426,7 +426,7 @@ help() {
 
 cmd="$1"
 
-if [ -z "$1" ]; then
+if [ -z "$cmd" ]; then
     
     help
 
